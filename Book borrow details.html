@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Borrow Book Details</title>
+
+<style>
+    body{
+        margin:0;
+        font-family:Arial, sans-serif;
+        background:#f4f4f4;
+    }
+
+    .container{
+        max-width:600px;
+        background:white;
+        margin:40px auto;
+        padding:25px;
+        border-radius:10px;
+        box-shadow:0 0 10px rgba(0,0,0,0.2);
+    }
+
+    h2{
+        text-align:center;
+        margin-bottom:20px;
+        color:#006800;
+    }
+
+    label{
+        font-weight:bold;
+        display:block;
+        margin:10px 0 5px;
+    }
+
+    input{
+        width:100%;
+        padding:10px;
+        border:1px solid #ccc;
+        border-radius:5px;
+        font-size:16px;
+    }
+
+    .btn{
+        width:100%;
+        padding:12px;
+        background:#006800;
+        color:white;
+        border:none;
+        border-radius:6px;
+        cursor:pointer;
+        font-size:18px;
+        margin-top:20px;
+    }
+
+    .btn:hover{background:#004d00;}
+
+    .back-btn{
+        display:block;
+        margin-top:15px;
+        text-align:center;
+        text-decoration:none;
+        color:#006800;
+        font-weight:bold;
+    }
+    .back-btn:hover{text-decoration:underline;}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>Borrow Book Details</h2>
+
+    <form id="borrowForm">
+
+        <label>Book Title</label>
+        <input type="text" id="bookTitle" readonly>
+
+        <label>Author</label>
+        <input type="text" id="bookAuthor" readonly>
+
+        <label>Date Borrowed</label>
+        <input type="date" id="borrowDate" required>
+
+        <label>Return Date</label>
+        <input type="text" value="Check front desk for transaction" readonly>
+
+        <button class="btn" type="submit">Confirm Borrow</button>
+    </form>
+
+    <a href="bookpage.html" class="back-btn">← Back to Books</a>
+</div>
+
+<script>
+// Read book title + author from URL
+const urlParams = new URLSearchParams(window.location.search);
+document.getElementById("bookTitle").value = urlParams.get("book") || "";
+document.getElementById("bookAuthor").value = urlParams.get("author") || "";
+
+// Save borrow record
+document.getElementById("borrowForm").addEventListener("submit", function(e){
+    e.preventDefault();
+
+    const borrowData = {
+        book: document.getElementById("bookTitle").value,
+        author: document.getElementById("bookAuthor").value,
+        borrowDate: document.getElementById("borrowDate").value,
+        returnDate: "Check front desk for transaction"
+    };
+
+    let records = JSON.parse(localStorage.getItem("borrowRecords")) || [];
+    records.push(borrowData);
+    localStorage.setItem("borrowRecords", JSON.stringify(records));
+
+    alert("Book successfully borrowed!");
+
+    window.location.href = "borrowing.html";
+});
+</script>
+
+</body>
+</html>

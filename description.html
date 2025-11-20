@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <!DOCTYPE html>
+<html>
+<head>
+    <title>Book Description</title>
+    <style>
+                    .words{
+            background-color: rgb(0, 42, 1);
+            padding: 15px;
+            display: flex;
+        }
+        .words h1{
+            font-weight: 500;
+            color: white;
+        }
+        .words p{
+            color: white;
+        }
+        .words img{
+            width: 100px;
+            height: 100px;
+        }
+        nav {
+            gap: 20px;
+            background-color: rgb(0, 104, 0);
+            display: flex;
+            gap: 20px;
+        }
+        nav a{
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s;
+            font-weight: bold;
+        }
+        nav a:hover{
+            color: black;
+        }
+        .cover{
+            justify-content: center;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+            <div class="words">
+    <img src="LMS IMG/logo.jpg" alt="MPSU Logo">
+    <div class="header1">
+    <h1>Mountain Province State University</h1>
+    <p>Bontoc Campus- Library</p>
+    </div>
+
+    </div>
+
+        <nav>
+        <a href="home">HOME</a>
+        <a href="book">BOOK</a>
+        <a href="borrowed">BOOKS BORROWED</a>
+        </nav>
+
+    <div class="cover">
+    <h1 id="title"></h1>
+    <img id="cover" src="" width="200" height="300" >
+    <p id="author"><strong></strong></p>
+    <p id="details"></p>
+    </div>
+
+    <script>
+        // Your book data
+        const books = {
+           
+    1: {
+        title: "Fundamentals of Information Technology",
+        author: "N. Radhakrishnan, Dhina Suresh, A. R. Bismaya",
+        details: "Covers computer basics, hardware, software, data processing, networking, and modern IT applications.",
+        image: "it/it1.jpg"
+    },
+    2: {
+        title: "Information Technology: An Introduction for Today’s Digital World (2nd Edition)",
+        author: "Richard Fox",
+        details: "Introduces digital systems, networking, cybersecurity, data, and the impact of IT in everyday life.",
+        image: "it/it2.jpg"
+    },
+    3: {
+        title: "Introduction to Information Technology: Computer Fundamentals",
+        author: "Alexis L. Bellegarde, R. M. Rampat",
+        details: "Covers computer fundamentals, hardware, software, IT in education and business, and CSEC-aligned concepts.",
+        image: "it/it3.jpg"
+    },
+    4: {
+        title: "Introduction to Information Technology",
+        author: "Sanjay Saxena",
+        details: "Explains IT systems, programming basics, multimedia, networking, and data communication.",
+        image: "it/it5.jpg"
+    },
+    5: {
+        title: "Information Technology for CSEC",
+        author: "Glenda Gay, Ron Blades",
+        details: "Curriculum-aligned guide covering theory, spreadsheets, databases, programming, and digital citizenship.",
+        image: "it/it6.jpg"
+    },
+    6: {
+        title: "Using Information Technology",
+        author: "Brian K. Williams, Stacey C. Sawyer",
+        details: "Focuses on digital tools, Internet literacy, productivity applications, and cybersecurity fundamentals.",
+        image: "it/it7.jpg"
+    },
+    7: {
+        title: "Introduction to Computers and Information Technology (2nd Edition)",
+        author: "Pearson Education",
+        details: "Covers computer basics, operating systems, networking, digital storage, and essential IT skills.",
+        image: "it/it8.jpg"
+    }
+
+
+        };
+
+        // Get id from URL
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get("id");
+
+        // Insert content into the page
+        if (books[id]) {
+            document.getElementById("title").textContent = books[id].title;
+            document.getElementById("author").textContent = "Author: " + books[id].author;
+            document.getElementById("details").textContent = books[id].details;
+            document.getElementById("cover").src = books[id].image;
+        } else {
+            document.body.innerHTML = "<h2>Book not found.</h2>";
+        }
+    </script>
+
+</body>
+</html>
+
+</body>
+</html>

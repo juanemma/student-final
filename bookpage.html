@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Books</title>
+
+<style>
+    body{margin:0;}
+
+    .words{
+        background:#002a01;
+        padding:15px;
+        display:flex;
+    }
+    .words h1,.words p{color:white;margin:0;}
+    .words img{width:100px;height:100px;}
+    .header1{margin-left:15px;}
+
+    .nav1{
+        background:#006800;
+        display:flex;
+        align-items:center;
+        padding:10px;
+    }
+    .left{display:flex;gap:20px;}
+    .left a{
+        color:white;
+        text-decoration:none;
+        font-weight:bold;
+    }
+    .left a:hover{color:black;}
+
+    .search-container{
+        margin:20px 15px;
+        display:flex;
+        justify-content:center;
+    }
+    .search-container input{
+        width:70%;
+        padding:10px;
+        font-size:17px;
+        border-radius:5px;
+        border:1px solid gray;
+    }
+
+    .book-grid{
+        display:grid;
+        grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+        gap:20px;
+        padding:20px;
+    }
+    .book{
+        background:#f5f5f5;
+        padding:15px;
+        border-radius:10px;
+        text-align:center;
+        transition:.3s;
+        cursor:pointer;
+    }
+    .book:hover{
+        background:#dcdcdc;
+        transform:scale(1.03);
+    }
+    .book img{
+        width:150px;
+        height:200px;
+        object-fit:cover;
+        border-radius:8px;
+    }
+
+    .status{
+        font-weight:bold;
+        margin-top:8px;
+        padding:5px;
+        border-radius:5px;
+    }
+    .available{color:green;}
+    .lowstock{color:orange;}
+    .out{color:red;}
+
+    .not-found{
+        text-align:center;
+        font-size:20px;
+        margin-top:30px;
+        color:red;
+        display:none;
+    }
+
+    .modal-bg{
+        display:none;
+        position:fixed;
+        top:0;left:0;
+        width:100%;height:100%;
+        background:rgba(0,0,0,.6);
+        justify-content:center;
+        align-items:center;
+        z-index:1000;
+    }
+    .modal-box{
+        background:white;
+        width:90%;
+        max-width:450px;
+        padding:20px;
+        border-radius:12px;
+        text-align:center;
+    }
+    .modal-box img{
+        width:180px;
+        height:230px;
+        object-fit:cover;
+        margin-bottom:15px;
+    }
+    .close-btn,.borrow-btn,.read-btn,.download-btn{
+        margin-top:10px;
+        padding:8px 20px;
+        border:none;
+        border-radius:6px;
+        cursor:pointer;
+    }
+    .close-btn{
+        background:#006800;
+        color:white;
+    }
+    .close-btn:hover{background:#004600;}
+
+    .borrow-btn{
+        background:#008000;
+        color:white;
+        margin-right:5px;
+    }
+    .borrow-btn:disabled{
+        background:gray;
+        cursor:not-allowed;
+    }
+    .read-btn{background:#007bff;color:white;margin-right:5px;}
+    .download-btn{background:#ff6600;color:white;}
+    .logout-btn {
+    color: white;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.logout-btn:hover {
+    color: red;
+}
+</style>
+</head>
+
+<body>
+
+<div class="words">
+    <img src="LMS IMG/logo.jpg">
+    <div class="header1">
+        <h1>Mountain Province State University</h1><br>
+        <p>Bontoc Campus</p>
+        <p>Library</p>
+    </div>
+</div>
+
+<nav class="nav1">
+    <div class="left">
+        <a href="home.html">HOME</a>
+        <a href="bookpage.html">BOOK</a>
+        <a href="borrowing.html">BOOKS BORROWED</a>
+    </div>
+    <div class="right" style="margin-left:auto;">
+        <a href="index.html" class="logout-btn">LOG OUT</a>
+    </div>
+</nav>
+
+<div class="search-container">
+    <input type="text" id="searchBar" placeholder="Search..." onkeyup="searchBooks()">
+</div>
+
+<div class="book-grid" id="bookGrid"></div>
+<p class="not-found" id="notFound">Book Not Found</p>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modalBg">
+    <div class="modal-box">
+        <img id="modalImage">
+        <h2 id="modalTitle"></h2>
+        <p><b>Author:</b> <span id="modalAuthor"></span></p>
+        <p><b>Category:</b> <span id="modalCategory"></span></p>
+        <p><b>Status:</b> <span id="modalStatus"></span></p>
+        <p id="modalDesc" style="margin-top:10px;"></p>
+
+        <button class="borrow-btn" id="borrowButton" onclick="goToBorrow()">Borrow</button>
+        <button class="read-btn">Read Online</button>
+        <button class="download-btn">Download PDF</button>
+        <button class="close-btn" onclick="closeModal()">Close</button>
+    </div>
+</div>
+
+<script>
+let selectedBook = "";
+
+let booksList = [
+    {title:"Criminal Investigation", author:"Charles R. Swanson", category:"Criminology", image:"bookpage/crim inves.jpg", desc:"A detailed guide on crime detection.", status:"5 stocks"},
+    {title:"Forensic Science Essentials", author:"Richard Saferstein", category:"Criminology", image:"bookpage/for sci.jpg", desc:"Modern forensic science techniques.", status:"Available"},
+    {title:"Fundamentals of Nursing", author:"Patricia A. Potter", category:"Nursing", image:"bookpage/fon.jpg", desc:"Core concepts, skills, and responsibilities.", status:"2 stocks"},
+    {title:"Medical-Surgical Nursing", author:"Ignatavicius & Workman", category:"Nursing", image:"bookpage/msn.jpg", desc:"Complete MS nursing concepts.", status:"Out of Stock"},
+    {title:"Programming Fundamentals", author:"Joyce Farrell", category:"Information Technology", image:"bookpage/pf.png", desc:"Introduction to coding and logic.", status:"Available"},
+    {title:"Computer Networking", author:"James F. Kurose", category:"Information Technology", image:"bookpage/cn.jpg", desc:"Explains network protocols and architecture.", status:"1 stock"},
+    {title:"Office Management Principles", author:"Ricky Griffin", category:"BSOA", image:"bookpage/omp.jpg", desc:"Office administration concepts.", status:"3 stocks"},
+    {title:"Foundations of Education", author:"Ornstein & Levine", category:"Teacher Education", image:"bookpage/fe.jpg", desc:"Teaching history and foundations.", status:"Available"},
+    {title:"Introduction to Psychology", author:"David G. Myers", category:"Liberal Arts", image:"bookpage/ip.jpg", desc:"Human behavior and cognition.", status:"Out of Stock"},
+    {title:"Accounting Principles", author:"Jerry Weygandt", category:"Accountancy", image:"bookpage/ap.jpg", desc:"Accounting basics and reporting.", status:"4 stocks"},
+    {title:"Principles of Marketing", author:"Philip Kotler", category:"Business Administration", image:"bookpage/pm.jpg", desc:"Marketing strategies and concepts.", status:"Available"}
+];
+
+function loadBooks(){
+    displayBooks(booksList);
+}
+
+function getStatusClass(status){
+    if(status.toLowerCase().includes("available")) return "available";
+    if(status.toLowerCase().includes("out")) return "out";
+    return "lowstock"; // 1 stock, 2 stocks, etc.
+}
+
+function displayBooks(list){
+    let grid = document.getElementById("bookGrid");
+    grid.innerHTML = "";
+
+    list.forEach(book =>{
+        let statusClass = getStatusClass(book.status);
+
+        grid.innerHTML += `
+        <div class="book"
+             data-title="${book.title}"
+             data-author="${book.author}"
+             data-category="${book.category}"
+             data-desc="${book.desc}"
+             data-image="${book.image}"
+             data-status="${book.status}"
+             onclick="openModal(this)">
+             
+            <img src="${book.image}">
+            <h4>${book.title}</h4>
+            <p><b>Author:</b> ${book.author}</p>
+            <p><b>Category:</b> ${book.category}</p>
+            <p class="status ${statusClass}">${book.status}</p>
+        </div>`;
+    });
+}
+
+function searchBooks(){
+    let input = document.getElementById("searchBar").value.toLowerCase();
+    let books = document.querySelectorAll(".book");
+    let notFound = document.getElementById("notFound");
+    let found = false;
+
+    books.forEach(book =>{
+        let t = book.dataset.title.toLowerCase();
+        let a = book.dataset.author.toLowerCase();
+        let c = book.dataset.category.toLowerCase();
+
+        if(t.includes(input) || a.includes(input) || c.includes(input)){
+            book.style.display = "block";
+            found = true;
+        } else {
+            book.style.display = "none";
+        }
+    });
+
+    notFound.style.display = found ? "none" : "block";
+}
+
+function openModal(book){
+    selectedBook = book.dataset.title;
+
+    document.getElementById("modalImage").src = book.dataset.image;
+    document.getElementById("modalTitle").innerText = book.dataset.title;
+    document.getElementById("modalAuthor").innerText = book.dataset.author;
+    document.getElementById("modalCategory").innerText = book.dataset.category;
+    document.getElementById("modalDesc").innerText = book.dataset.desc;
+    document.getElementById("modalStatus").innerText = book.dataset.status;
+
+    let borrowBtn = document.getElementById("borrowButton");
+
+    // Disable borrow button if Out of Stock
+    borrowBtn.disabled = book.dataset.status.toLowerCase().includes("out");
+
+    document.getElementById("modalBg").style.display = "flex";
+}
+
+function closeModal(){
+    document.getElementById("modalBg").style.display = "none";
+}
+
+function goToBorrow(){
+    window.location.href = "Book borrow details.html?book=" + encodeURIComponent(selectedBook);
+}
+
+loadBooks();
+</script>
+
+</body>
+</html>
